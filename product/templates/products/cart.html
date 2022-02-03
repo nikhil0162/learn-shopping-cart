@@ -1,0 +1,140 @@
+{% extends 'products/base.html' %}
+
+{% block body %}
+<section style="background-color: #eee;">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6 col-xl-4">
+                <div>
+                    <table class="all_cart_items">
+
+                    </table>
+                    <button id="delete_all_id" onClick="deleteAllCarts(this)">Delete All</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+
+
+{% block javascript %}
+<script>
+    $(document).ready(function () {
+        fetch_cart_list()
+    })
+    function fetch_cart_list() {
+        $.ajax({
+            url: "/api/carts/?guest_user_key={{guest_user_key}}",
+            type: "GET",
+            success: function (data) {
+                let data_render = "";
+                for (let i = 0; i < data.length; i++) {
+                    data_render += "<tr><td>Cart " + data[i].id + "<button value='" + data[i].id + "'onClick='deleteFromCart(this)'>Delete</button></td></tr>"
+                }
+
+                $(".all_cart_items").append(data_render)
+            },
+            error: function (xhr, exception, thrownError) {
+                var msg = "";
+                if (xhr.status === 0) {
+                    msg = "Not connect.\n Verify Network.";
+                } else if (xhr.status == 404) {
+                    msg = "Requested page not found. [404]";
+                } else if (xhr.status == 500) {
+                    msg = "Internal Server Error [500].";
+                } else if (exception === "parsererror") {
+                    msg = "Requested JSON parse failed.";
+                } else if (exception === "timeout") {
+                    msg = "Time out error.";
+                } else if (exception === "abort") {
+                    msg = "Ajax request aborted.";
+                } else {
+                    msg = "Error:" + xhr.status + " " + xhr.responseText;
+                }
+                if (callbackError) {
+                    callbackError(msg);
+                }
+
+            }
+        });
+    }
+
+
+    function deleteAllCarts() {
+        $.ajax({
+            url: "/api/carts/delete_all/{{guest_user_key}}/",
+            type: "DELETE",
+            success: function (data) {
+                console.log(data);
+                $(".all_cart_items").html("")
+                fetch_cart_list()
+            },
+            error: function (xhr, exception, thrownError) {
+                var msg = "";
+                if (xhr.status === 0) {
+                    msg = "Not connect.\n Verify Network.";
+                } else if (xhr.status == 404) {
+                    msg = "Requested page not found. [404]";
+                } else if (xhr.status == 500) {
+                    msg = "Internal Server Error [500].";
+                } else if (exception === "parsererror") {
+                    msg = "Requested JSON parse failed.";
+                } else if (exception === "timeout") {
+                    msg = "Time out error.";
+                } else if (exception === "abort") {
+                    msg = "Ajax request aborted.";
+                } else {
+                    msg = "Error:" + xhr.status + " " + xhr.responseText;
+                }
+                if (callbackError) {
+                    callbackError(msg);
+                }
+
+            }
+        });
+    }
+
+
+    function deleteFromCart(val) {
+        let cart_id = val.value
+
+        $.ajax({
+            url: "/api/carts/" + cart_id + "/",
+            type: "DELETE",
+            // data: JSON.stringify({ 'product': product_id }),
+            // contentType: 'application/json',
+            success: function (data) {
+                $(".all_cart_items").html("")
+                fetch_cart_list()
+            },
+            error: function (xhr, exception, thrownError) {
+                var msg = "";
+                if (xhr.status === 0) {
+                    msg = "Not connect.\n Verify Network.";
+                } else if (xhr.status == 404) {
+                    msg = "Requested page not found. [404]";
+                } else if (xhr.status == 500) {
+                    msg = "Internal Server Error [500].";
+                } else if (exception === "parsererror") {
+                    msg = "Requested JSON parse failed.";
+                } else if (exception === "timeout") {
+                    msg = "Time out error.";
+                } else if (exception === "abort") {
+                    msg = "Ajax request aborted.";
+                } else {
+                    msg = "Error:" + xhr.status + " " + xhr.responseText;
+                }
+                if (callbackError) {
+                    callbackError(msg);
+                }
+
+            }
+        });
+
+    }
+
+</script>
+{% endblock %}

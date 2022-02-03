@@ -1,0 +1,105 @@
+{% extends 'products/base.html' %}
+
+{% block body %}
+<section style="background-color: #eee;">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6 col-xl-4">
+                {% for product_obj in product_qs %}
+                <div class="card text-black">
+                    <i class="fab fa-apple fa-lg pt-3 pb-1 px-3"></i>
+                    <img src="https://mdbcdn.b-cdn.net/img/Photos/Horizontal/E-commerce/Products/3.webp"
+                        class="card-img-top" alt="Apple Computer" />
+                    <div class="card-body">
+                        <div class="text-center">
+                            <h5 class="card-title">{{product_obj.id}}</h5>
+                            <p class="text-muted mb-4">{{product_obj.name}}</p>
+                        </div>
+                        <!-- <form method="POST"> -->
+                        <button id="product_id" onClick="addToCart(this)" value={{product_obj.id}}>ADD To
+                            cart</button>
+                        <!-- </form> -->
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+
+
+{% block javascript %}
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: "/api/products/",
+            type: "GET",
+            success: function (data) {
+                console.log(data);
+            },
+            error: function (xhr, exception, thrownError) {
+                var msg = "";
+                if (xhr.status === 0) {
+                    msg = "Not connect.\n Verify Network.";
+                } else if (xhr.status == 404) {
+                    msg = "Requested page not found. [404]";
+                } else if (xhr.status == 500) {
+                    msg = "Internal Server Error [500].";
+                } else if (exception === "parsererror") {
+                    msg = "Requested JSON parse failed.";
+                } else if (exception === "timeout") {
+                    msg = "Time out error.";
+                } else if (exception === "abort") {
+                    msg = "Ajax request aborted.";
+                } else {
+                    msg = "Error:" + xhr.status + " " + xhr.responseText;
+                }
+                if (callbackError) {
+                    callbackError(msg);
+                }
+
+            }
+        });
+    })
+    function addToCart(val) {
+        let product_id = val.value
+
+        $.ajax({
+            url: "/api/carts/",
+            type: "POST",
+            data: JSON.stringify({ 'product': product_id }),
+            contentType: 'application/json',
+            success: function (data) {
+                console.log(data);
+            },
+            error: function (xhr, exception, thrownError) {
+                var msg = "";
+                if (xhr.status === 0) {
+                    msg = "Not connect.\n Verify Network.";
+                } else if (xhr.status == 404) {
+                    msg = "Requested page not found. [404]";
+                } else if (xhr.status == 500) {
+                    msg = "Internal Server Error [500].";
+                } else if (exception === "parsererror") {
+                    msg = "Requested JSON parse failed.";
+                } else if (exception === "timeout") {
+                    msg = "Time out error.";
+                } else if (exception === "abort") {
+                    msg = "Ajax request aborted.";
+                } else {
+                    msg = "Error:" + xhr.status + " " + xhr.responseText;
+                }
+                if (callbackError) {
+                    callbackError(msg);
+                }
+
+            }
+        });
+
+    }
+
+</script>
+{% endblock %}
